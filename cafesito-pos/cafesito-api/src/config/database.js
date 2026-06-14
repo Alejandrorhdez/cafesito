@@ -4,7 +4,7 @@ dotenv.config();
 
 const conectarDB = async () => {
     try {
-        const urlLocal = process.env.MONGO_URI || 'mongodb://localhost:27017/cafeteria_pos'; 
+        const urlLocal = process.env.MONGODB_URI || 'mongodb://localhost:27017/cafeteria_pos'; 
         
         await mongoose.connect(urlLocal);
         console.log('✅ Conexión exitosa a MongoDB');
