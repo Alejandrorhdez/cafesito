@@ -1,0 +1,61 @@
+.chef-dashboard {
+  padding: 2rem;
+  background-color: #f4f7f6;
+  min-height: calc(100vh - 60px);
+}
+
+.chef-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.orders-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.order-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+}
+
+.order-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.order-items {
+  flex: 1;
+  margin-bottom: 1.5rem;
+}
+
+.order-item-row {
+  padding: 0.5rem 0;
+  border-bottom: 1px dashed #f0f0f0;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.order-actions {
+  margin-top: auto;
+}
+
+.order-actions button {
+  width: 100%;
+}
