@@ -1,37 +1,4 @@
 import { http } from "./http";
-
-// export const getProducts = async ()=>{
-//     // User.findOne({name}).then(user=>{
-//     //   Orders.find({userId:user.id}).then(orders=>{
-//     //   })
-//     // })
-
-//     // try {
-//     //   const user = await User.findOne({name});
-
-//     //   const orders = await Orders.find({userId: user.id})
-//     // } catch (error) {
-
-//     // }
-
-//     try {
-
-//         const response = await fetch(BASE_URL);
-//         if (!response.ok) {
-//             console.log('error al hacer la petición');
-//             throw new Error('');
-//         }
-//         const data = await response.json();
-//         return data;
-//     } catch (error) {
-//         console.log(error);
-//         throw new Error(error);
-//     }
-//     finally{
-
-//     }
-// }
-
 const mapProduct = (p) => {
   if (!p) return p;
   return {

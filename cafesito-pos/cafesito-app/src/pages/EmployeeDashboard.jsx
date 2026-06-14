@@ -18,18 +18,15 @@ export default function EmployeeDashboard() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Client Selection States
-  const [clientTab, setClientTab] = useState('invitado'); // 'invitado' | 'buscar'
+  const [clientTab, setClientTab] = useState('invitado');
   const [searchPhone, setSearchPhone] = useState('');
   const [selectedClient, setSelectedClient] = useState(null);
   const [searching, setSearching] = useState(false);
   const [searchError, setSearchError] = useState('');
   const [guestName, setGuestName] = useState('');
 
-  // Notifications State
   const { notifications, deleteNotification } = useNotifications();
 
-  // Auto-select client when returning from /register-client
   useEffect(() => {
     if (location.state?.registeredPhone) {
       const autoFetch = async () => {
@@ -47,7 +44,6 @@ export default function EmployeeDashboard() {
         }
       };
       autoFetch();
-      // Clear the history state
       window.history.replaceState({}, document.title);
     }
   }, [location.state]);
@@ -64,7 +60,6 @@ export default function EmployeeDashboard() {
       setSelectedClient(data);
     } catch (error) {
       if (error.response?.status === 404) {
-        // Redirigir directamente a registrar cliente pre-llenando el telefono
         navigate('/register-client', { state: { phone: searchPhone.trim() } });
       } else {
         setSearchError(error.response?.data?.error || 'Error al buscar el cliente');
@@ -74,7 +69,6 @@ export default function EmployeeDashboard() {
     }
   };
 
-  // Emit client info via socket when client changes
   useEffect(() => {
     if (clientTab === 'buscar' && selectedClient) {
       const clientName = selectedClient.nombre || selectedClient.displayName;
@@ -84,12 +78,10 @@ export default function EmployeeDashboard() {
     }
   }, [selectedClient, clientTab]);
 
-
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const data = await getProducts();
-        // Assuming data is an array or has a data property
         setProducts(data.data || data || []);
       } catch (error) {
         console.error("Error fetching products", error);
@@ -100,7 +92,6 @@ export default function EmployeeDashboard() {
     fetchProducts();
   }, []);
 
-  // Explicit categories list
   const categories = ["Todos", "CALIENTE", "FRIO", "PANADERIA", "PASTELERIA", "ALIMENTOS", "OTROS"];
 
   const filteredProducts = selectedCategory === "Todos"
@@ -110,27 +101,16 @@ export default function EmployeeDashboard() {
   return (
     <div className="employee-dashboard">
       <div className="products-section">
-        <div className="employee-actions" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.5rem' }}>
+        <div className="employee-actions-container">
           <h2>Productos</h2>
           
-          {/* Category Filter Tabs */}
           {!loading && (
-            <div className="category-tabs" style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '0.5rem' }}>
+            <div className="category-tabs-container">
               {categories.map(cat => (
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
-                  style={{
-                    padding: '0.4rem 1rem',
-                    borderRadius: '4px',
-                    border: '1px solid #94a3b8',
-                    backgroundColor: selectedCategory === cat ? '#475569' : '#ffffff',
-                    color: selectedCategory === cat ? '#ffffff' : '#1e293b',
-                    cursor: 'pointer',
-                    fontWeight: selectedCategory === cat ? 'bold' : 'normal',
-                    fontSize: '0.85rem',
-                    whiteSpace: 'nowrap'
-                  }}
+                  className={`category-tab ${selectedCategory === cat ? 'active' : ''}`}
                 >
                   {cat}
                 </button>
@@ -148,7 +128,7 @@ export default function EmployeeDashboard() {
                 <ProductCard key={product._id} product={product} orientation="horizontal" />
               ))
             ) : (
-              <div style={{ textAlign: 'center', padding: '2rem', color: '#64748b', gridColumn: '1 / -1' }}>
+              <div className="products-empty-msg">
                 <h3>NO HAY ARTICULOS DISPONIBLES POR EL MOMENTO</h3>
               </div>
             )}
@@ -157,19 +137,15 @@ export default function EmployeeDashboard() {
       </div>
       
       <div className="cart-section">
-        <div className="cart-actions-header" style={{ padding: '1rem', borderBottom: '1px solid #e1e4e8', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h3 style={{ margin: 0, fontSize: '1.1rem' }}>Orden Actual</h3>
-          <Button variant="secondary" onClick={() => navigate('/orders')} style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>Ver Órdenes</Button>
+        <div className="cart-actions-header-container">
+          <h3 className="cart-header-title-text">Orden Actual</h3>
+          <Button variant="secondary" onClick={() => navigate('/orders')} className="view-orders-btn">Ver Órdenes</Button>
         </div>
 
-        <div className="client-selection-container" style={{
-          padding: '1rem',
-          borderBottom: '1px solid #cbd5e1',
-          backgroundColor: '#f8fafc'
-        }}>
-          <h4 style={{ margin: '0 0 0.5rem 0', color: '#1e293b', fontSize: '0.9rem', fontWeight: 'bold' }}>Cliente para la venta:</h4>
+        <div className="client-selection-box">
+          <h4 className="client-selection-title">Cliente para la venta:</h4>
           
-          <div className="client-tabs" style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.75rem' }}>
+          <div className="client-tabs-bar">
             <button
               onClick={() => {
                 setClientTab('invitado');
@@ -178,13 +154,7 @@ export default function EmployeeDashboard() {
                 setSearchError('');
                 setGuestName('');
               }}
-              style={{
-                flex: 1,
-                padding: '0.5rem',
-                fontSize: '0.8rem',
-                fontWeight: clientTab === 'invitado' ? 'bold' : 'normal',
-                cursor: 'pointer'
-              }}
+              className={`client-tab-btn ${clientTab === 'invitado' ? 'active' : ''}`}
             >
               Invitado
             </button>
@@ -193,13 +163,7 @@ export default function EmployeeDashboard() {
                 setClientTab('buscar');
                 setSearchError('');
               }}
-              style={{
-                flex: 1,
-                padding: '0.5rem',
-                fontSize: '0.8rem',
-                fontWeight: clientTab === 'buscar' ? 'bold' : 'normal',
-                cursor: 'pointer'
-              }}
+              className={`client-tab-btn ${clientTab === 'buscar' ? 'active' : ''}`}
             >
               Ya es Cliente
             </button>
@@ -207,50 +171,30 @@ export default function EmployeeDashboard() {
               onClick={() => {
                 navigate('/register-client', { state: { phone: searchPhone } });
               }}
-              style={{
-                flex: 1,
-                padding: '0.5rem',
-                fontSize: '0.8rem',
-                cursor: 'pointer'
-              }}
+              className="client-tab-btn"
             >
               Registrar Cliente
             </button>
           </div>
 
           {clientTab === 'invitado' && (
-            <div style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '0.5rem',
-              padding: '0.5rem',
-              backgroundColor: '#f1f5f9',
-              border: '1px solid #94a3b8',
-              borderRadius: '4px',
-            }}>
-              <div style={{ color: '#334155', fontSize: '0.8rem', fontWeight: 'bold' }}>Modo: INVITADO</div>
+            <div className="guest-mode-box">
+              <div className="guest-mode-title">Modo: INVITADO</div>
               <input
                 type="text"
                 placeholder="Nombre del Invitado (Ej. Javier)"
                 value={guestName}
                 onChange={(e) => setGuestName(e.target.value)}
-                style={{
-                  padding: '0.4rem 0.6rem',
-                  fontSize: '0.85rem',
-                  borderRadius: '4px',
-                  border: '1px solid #cbd5e1',
-                  outline: 'none',
-                  width: '100%'
-                }}
+                className="guest-name-input"
               />
             </div>
           )}
 
           {clientTab === 'buscar' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <div className="client-search-box">
               {!selectedClient ? (
                 <>
-                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <div className="client-search-row">
                     <input
                       type="tel"
                       placeholder="Número de Teléfono..."
@@ -259,50 +203,26 @@ export default function EmployeeDashboard() {
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') handleSearchClient();
                       }}
-                      style={{
-                        flex: 1,
-                        padding: '0.4rem 0.6rem',
-                        fontSize: '0.85rem',
-                        borderRadius: '4px',
-                        border: '1px solid #cbd5e1',
-                        outline: 'none'
-                      }}
+                      className="client-phone-input"
                     />
                     <button
                       onClick={handleSearchClient}
                       disabled={searching}
-                      style={{
-                        padding: '0.4rem 0.8rem',
-                        fontSize: '0.85rem',
-                        fontWeight: 'bold',
-                        backgroundColor: '#475569',
-                        color: '#ffffff',
-                        border: '1px solid #334155',
-                        borderRadius: '4px',
-                        cursor: 'pointer'
-                      }}
+                      className="client-validate-btn"
                     >
                       {searching ? 'Buscando...' : 'Validar'}
                     </button>
                   </div>
                   {searchError && (
-                    <span style={{ color: '#ef4444', fontSize: '0.75rem', fontWeight: '500' }}>
+                    <span className="client-search-error">
                       {searchError}
                     </span>
                   )}
                 </>
               ) : (
-                <div style={{
-                  padding: '0.6rem',
-                  backgroundColor: '#f8fafc',
-                  border: '1px solid #cbd5e1',
-                  borderRadius: '4px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '0.25rem'
-                }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: '0.85rem', fontWeight: 'bold', color: '#334155' }}>
+                <div className="client-info-card">
+                  <div className="client-info-header">
+                    <span className="guest-mode-title">
                       Cliente Registrado ✓
                     </span>
                     <button
@@ -310,19 +230,12 @@ export default function EmployeeDashboard() {
                         setSelectedClient(null);
                         setSearchPhone('');
                       }}
-                      style={{
-                        border: 'none',
-                        background: 'none',
-                        color: '#ef4444',
-                        fontSize: '0.75rem',
-                        fontWeight: 'bold',
-                        cursor: 'pointer'
-                      }}
+                      className="client-change-btn"
                     >
                       Cambiar
                     </button>
                   </div>
-                  <div style={{ fontSize: '0.8rem', color: '#1e293b' }}>
+                  <div className="client-info-details">
                     <strong>Nombre:</strong> {selectedClient.nombre || selectedClient.displayName}<br />
                     <strong>Email:</strong> {selectedClient.email}<br />
                     <strong>Teléfono:</strong> {selectedClient.telefono}<br />
@@ -364,14 +277,14 @@ export default function EmployeeDashboard() {
 
       <div className="notifications-section">
         <div className="notifications-header">
-          <h3 style={{ margin: 0, fontSize: '1.1rem' }}>Órdenes Terminadas</h3>
-          <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b' }}>
+          <h3 className="orders-finished-title">Órdenes Terminadas</h3>
+          <p className="orders-finished-subtitle">
             {notifications.length} {notifications.length === 1 ? 'orden terminada' : 'órdenes terminadas'}
           </p>
         </div>
         <div className="notifications-list">
           {notifications.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '2rem', color: '#94a3b8' }}>
+            <div className="notifications-empty-msg">
               No hay notificaciones recientes.
             </div>
           ) : (

@@ -1,5 +1,6 @@
 import User from '../models/User.js';
 import jwt from 'jsonwebtoken';
+import { getDiscountPercentage } from '../utils/discountHelper.js';
 
 // Generar Token JWT
 const generarToken = (id) => {
@@ -70,11 +71,13 @@ const loginUsuario = async (req, res, next) => {
 
         // Verificar la contraseña y el usuario
         if (usuario && (await usuario.compararPassword(password))) {
+            const descuento = await getDiscountPercentage(usuario._id);
             res.json({
                 _id: usuario._id,
                 nombre: usuario.nombre,
                 email: usuario.email,
                 rol: usuario.rol,
+                descuento,
                 token: generarToken(usuario._id)
             });
         } else {
@@ -91,11 +94,13 @@ const obtenerPerfil = async (req, res, next) => {
         const usuario = await User.findById(req.usuario._id);
         
         if (usuario) {
+            const descuento = await getDiscountPercentage(usuario._id);
             res.json({
                 _id: usuario._id,
                 nombre: usuario.nombre,
                 email: usuario.email,
-                rol: usuario.rol
+                rol: usuario.rol,
+                descuento
             });
         } else {
             res.status(404).json({ error: 'Usuario no encontrado' });

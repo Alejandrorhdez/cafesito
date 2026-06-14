@@ -3,7 +3,7 @@ import { http } from "./http";
 export const register = async (userData) => {
   try {
     const response = await http.post("auth/registrar", userData);
-    const { nombre, email } = response.data; // backend returns _id, nombre, email, rol, token
+    const { nombre, email } = response.data;
 
     if (email) {
       return email;

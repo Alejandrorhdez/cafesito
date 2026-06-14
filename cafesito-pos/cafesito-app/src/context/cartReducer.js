@@ -23,7 +23,7 @@ export function cartReducer(state, action) {
       return { ...state, items };
     }
     case CART_ACTIONS.ADD: {
-      const p = action.payload; //{id,name,price,image,}
+      const p = action.payload;
       const exists = state.items.find((i) => i._id === p._id);
       const items = exists
         ? state.items.map((i) =>

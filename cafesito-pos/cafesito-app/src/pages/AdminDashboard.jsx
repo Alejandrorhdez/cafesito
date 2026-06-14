@@ -1,22 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { Button, Loading, ErrorMessage } from '../components/atoms';
+import React, { useEffect, useState } from 'react';
 import { getProducts, createProduct, updateProduct, deleteProduct, uploadProductImage } from '../services/productService';
 import { getUsers, createUser, updateUser, deleteUser } from '../services/userService';
-import { getAllOrders, updateOrderStatus, hideOrderFromAdmin, hideAllOrdersFromAdmin } from '../services/orderService';
-import { saveFinanceReport, getFinanceReports } from '../services/financeService';
+import { getAllOrders, updateOrderStatus, hideAllOrdersFromAdmin } from '../services/orderService';
+import { getFinanceReports, saveFinanceReport } from '../services/financeService';
+import { Button, Loading, ErrorMessage } from '../components/atoms';
 import './AdminDashboard.css';
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('productos');
   const [products, setProducts] = useState([]);
-  const [users, setUsers] = useState([]);
   const [orders, setOrders] = useState([]);
+  const [users, setUsers] = useState([]);
   const [financeReports, setFinanceReports] = useState([]);
-  
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // Modals state
   const [showProductModal, setShowProductModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [showUserModal, setShowUserModal] = useState(false);
@@ -26,16 +24,14 @@ export default function AdminDashboard() {
   const [showPurchasesModal, setShowPurchasesModal] = useState(false);
   const [clientForPurchases, setClientForPurchases] = useState(null);
 
-  // Product Form State
   const [prodName, setProdName] = useState('');
   const [prodPrice, setProdPrice] = useState('');
-  const [prodStock, setProdStock] = useState('1'); // Default to Available ('1')
+  const [prodStock, setProdStock] = useState('1');
   const [prodCategory, setProdCategory] = useState('CALIENTE');
   const [prodDescription, setProdDescription] = useState('');
   const [prodImage, setProdImage] = useState('');
   const [uploadingImage, setUploadingImage] = useState(false);
 
-  // User Form State
   const [userName, setUserName] = useState('');
   const [userEmail, setUserEmail] = useState('');
   const [userPassword, setUserPassword] = useState('');
@@ -79,7 +75,6 @@ export default function AdminDashboard() {
     }
   };
 
-  // PRODUCT CRUD HANDLERS
   const openNewProductModal = () => {
     setEditingProduct(null);
     setProdName('');
@@ -140,7 +135,6 @@ export default function AdminDashboard() {
     }
   };
 
-  // CLIENT CRUD HANDLERS
   const openEditClientModal = (client) => {
     setEditingClient(client);
     setUserName(client.nombre);
@@ -190,7 +184,6 @@ export default function AdminDashboard() {
     setShowPurchasesModal(true);
   };
 
-  // USER CRUD HANDLERS
   const openNewUserModal = () => {
     setEditingUser(null);
     setUserName('');
@@ -205,7 +198,7 @@ export default function AdminDashboard() {
     setEditingUser(user);
     setUserName(user.nombre);
     setUserEmail(user.email);
-    setUserPassword(''); // Leave blank unless updating
+    setUserPassword('');
     setUserRole(user.role || 'Seleccionar Rol');
     setUserPhone(user.telefono || '');
     setShowUserModal(true);
@@ -267,11 +260,9 @@ export default function AdminDashboard() {
     }
   };
 
-  // ORDER STATUS HANDLERS
   const handleOrderStatusChange = async (orderId, newStatus) => {
     try {
       await updateOrderStatus(orderId, newStatus);
-      // Update locally
       setOrders(orders.map(o => o._id === orderId ? { ...o, status: newStatus, estado: newStatus } : o));
     } catch (err) {
       console.error("Error changing order status:", err);
@@ -291,7 +282,6 @@ export default function AdminDashboard() {
     }
   };
 
-  // FINANCIAL CALCULATIONS
   const getTodaySales = () => {
     const todayStr = new Date().toDateString();
     return orders
@@ -384,11 +374,11 @@ export default function AdminDashboard() {
                     <tbody>
                       {products.map(product => (
                         <tr key={product._id}>
-                          <td style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                          <td className="admin-prod-image-cell">
                             <img 
                               src={product.imagen || '/img/products/placeholder.svg'} 
                               alt={product.name} 
-                              style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '4px' }} 
+                              className="admin-prod-img-preview" 
                               onError={(e) => { e.target.src = '/img/products/placeholder.svg'; }}
                             />
                             <strong>{product.name}</strong>
@@ -396,14 +386,7 @@ export default function AdminDashboard() {
                           <td>{product.category || 'Sin categoría'}</td>
                           <td>{formatMoney(product.price)}</td>
                           <td>
-                            <span style={{
-                              padding: '0.25rem 0.5rem', 
-                              borderRadius: '6px', 
-                              fontSize: '0.8rem',
-                              fontWeight: '600',
-                              backgroundColor: product.stock > 0 ? '#dcfce7' : '#fee2e2',
-                              color: product.stock > 0 ? '#15803d' : '#991b1b'
-                            }}>
+                            <span className={`admin-badge ${product.stock > 0 ? 'admin-badge-available' : 'admin-badge-unavailable'}`}>
                               {product.stock > 0 ? 'Disponible' : 'No disponible'}
                             </span>
                           </td>
@@ -448,7 +431,7 @@ export default function AdminDashboard() {
                       {orders.filter(order => !order.eliminadoAdmin).map(order => (
                         <tr key={order._id}>
                           <td>#{order._id.substring(order._id.length - 6)}</td>
-                          <td>{order.usuario?.nombre || (order.nombreInvitado ? `${order.nombreInvitado} (Invitado)` : 'INVITADO')} <br/><span style={{fontSize:'0.75rem', color:'#64748b'}}>{order.usuario?.email || ''}</span></td>
+                          <td>{order.usuario?.nombre || (order.nombreInvitado ? `${order.nombreInvitado} (Invitado)` : 'INVITADO')} <br/><span className="admin-order-client-email">{order.usuario?.email || ''}</span></td>
                           <td>{new Date(order.date).toLocaleString('es-MX')}</td>
                           <td><strong>{formatMoney(order.total)}</strong></td>
                           <td>{order.metodoPago || 'Efectivo'}</td>
@@ -500,14 +483,7 @@ export default function AdminDashboard() {
                           <td>{user.email}</td>
                           <td>{user.telefono || '-'}</td>
                           <td>
-                            <span style={{
-                              padding: '0.25rem 0.5rem', 
-                              borderRadius: '6px', 
-                              fontSize: '0.8rem',
-                              fontWeight: '600',
-                              backgroundColor: user.rol === 'Administrador' ? '#fee2e2' : user.rol === 'Chef' ? '#fef9c3' : '#e0f2fe',
-                              color: user.rol === 'Administrador' ? '#991b1b' : user.rol === 'Chef' ? '#854d0e' : '#0369a1'
-                            }}>
+                            <span className={`admin-badge ${user.rol === 'Administrador' ? 'admin-user-badge-admin' : user.rol === 'Chef' ? 'admin-user-badge-chef' : 'admin-user-badge-cajero'}`}>
                               {user.rol}
                             </span>
                           </td>
@@ -551,24 +527,12 @@ export default function AdminDashboard() {
                             {(() => {
                               const clientOrders = orders.filter(o => o.usuario?._id === user._id || o.usuario?.email === user.email);
                               if (clientOrders.length === 0) {
-                                return <span style={{ color: '#64748b' }}>0 compras</span>;
+                                return <span className="admin-client-zero-purchases">0 compras</span>;
                               }
                               return (
                                 <button 
-                                  className="btn-link" 
+                                  className="admin-client-purchases-btn" 
                                   onClick={() => openPurchasesModal(user)}
-                                  style={{
-                                    background: 'none',
-                                    border: 'none',
-                                    color: '#16a34a',
-                                    textDecoration: 'underline',
-                                    cursor: 'pointer',
-                                    padding: 0,
-                                    fontFamily: 'inherit',
-                                    fontSize: 'inherit',
-                                    fontWeight: '600',
-                                    textAlign: 'left'
-                                  }}
                                 >
                                   {clientOrders.length} {clientOrders.length === 1 ? 'compra' : 'compras'}
                                 </button>
@@ -615,7 +579,7 @@ export default function AdminDashboard() {
                   </div>
                 </div>
 
-                <div className="section-header" style={{ marginTop: '2rem', borderBottom: 'none' }}>
+                <div className="section-header admin-section-header-margin-2">
                   <h3>Detalle de Ventas Completadas</h3>
                 </div>
                 <div className="table-container">
@@ -645,7 +609,7 @@ export default function AdminDashboard() {
                   </table>
                 </div>
 
-                <div className="section-header" style={{ marginTop: '3rem', borderBottom: 'none' }}>
+                <div className="section-header admin-section-header-margin-3">
                   <h3>Historial de Reportes Guardados</h3>
                 </div>
                 <div className="table-container">
@@ -663,7 +627,7 @@ export default function AdminDashboard() {
                     <tbody>
                       {financeReports.length === 0 ? (
                         <tr>
-                          <td colSpan="6" style={{ textAlign: 'center', color: '#64748b', padding: '2rem' }}>
+                          <td colSpan="6" className="admin-table-empty-td">
                             No hay reportes financieros guardados aún.
                           </td>
                         </tr>
@@ -688,7 +652,6 @@ export default function AdminDashboard() {
         )}
       </div>
 
-      {/* PRODUCT MODAL */}
       {showProductModal && (
         <div className="modal-backdrop">
           <div className="modal-box">
@@ -728,12 +691,12 @@ export default function AdminDashboard() {
               </div>
               <div className="form-row">
                 <label>Imagen del Producto</label>
-                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                <div className="admin-flex-gap-1">
                   {prodImage && (
                     <img 
                       src={prodImage} 
                       alt="Vista previa" 
-                      style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '4px' }} 
+                      className="admin-image-upload-preview" 
                       onError={(e) => { e.target.src = '/img/products/placeholder.svg'; }}
                     />
                   )}
@@ -754,7 +717,7 @@ export default function AdminDashboard() {
                       }
                     }}
                   />
-                  {uploadingImage && <span style={{ fontSize: '0.85rem', color: '#64748b' }}>Subiendo...</span>}
+                  {uploadingImage && <span className="admin-text-uploading">Subiendo...</span>}
                 </div>
               </div>
               <div className="form-row">
@@ -789,7 +752,6 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* CLIENT MODAL */}
       {showClientModal && (
         <div className="modal-backdrop">
           <div className="modal-box">
@@ -836,58 +798,50 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* PURCHASES MODAL */}
       {showPurchasesModal && clientForPurchases && (
         <div className="modal-backdrop">
-          <div className="modal-box" style={{ maxWidth: '650px', maxHeight: '90vh', display: 'flex', flexDirection: 'column', padding: '2rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.75rem' }}>
-              <h3 style={{ margin: 0 }}>Historial de Compras: {clientForPurchases.nombre}</h3>
+          <div className="modal-box admin-modal-box-purchases">
+            <div className="admin-modal-purchases-header">
+              <h3 className="admin-modal-title-margin-0">Historial de Compras: {clientForPurchases.nombre}</h3>
               <button 
                 onClick={() => setShowPurchasesModal(false)}
-                style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer', color: '#64748b' }}
+                className="admin-modal-close-btn"
               >
                 &times;
               </button>
             </div>
             
-            <div style={{ overflowY: 'auto', flex: 1, paddingRight: '0.5rem' }}>
+            <div className="admin-modal-scrollable-body">
               {(() => {
                 const clientOrders = orders.filter(
                   o => o.usuario?._id === clientForPurchases._id || o.usuario?.email === clientForPurchases.email
                 );
                 
                 if (clientOrders.length === 0) {
-                  return <p style={{ color: '#64748b', textAlign: 'center', margin: '2rem 0' }}>Este cliente aún no ha realizado compras.</p>;
+                  return <p className="admin-purchases-empty-p">Este cliente aún no ha realizado compras.</p>;
                 }
 
                 return (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                  <div className="admin-purchases-list-container">
                     {clientOrders.map(order => (
-                      <div key={order._id} style={{ border: '1px solid #e2e8f0', borderRadius: '8px', padding: '1rem', backgroundColor: '#f8fafc' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                          <span style={{ fontWeight: '700', color: '#1e293b' }}>Orden #{order._id.substring(order._id.length - 6)}</span>
-                          <span style={{
-                            padding: '0.25rem 0.5rem',
-                            borderRadius: '6px',
-                            fontSize: '0.75rem',
-                            fontWeight: '600',
-                            backgroundColor: (order.status === 'Completada' || order.status === 'Orden Terminada' || order.status === 'Terminada') ? '#dcfce7' : order.status === 'Cancelada' ? '#fee2e2' : '#fef9c3',
-                            color: (order.status === 'Completada' || order.status === 'Orden Terminada' || order.status === 'Terminada') ? '#15803d' : order.status === 'Cancelada' ? '#991b1b' : '#854d0e'
-                          }}>
+                      <div key={order._id} className="admin-purchase-item-card">
+                        <div className="admin-purchase-item-header">
+                          <span className="admin-purchase-item-order-id">Orden #{order._id.substring(order._id.length - 6)}</span>
+                          <span className={`admin-purchase-item-status-badge ${(order.status === 'Completada' || order.status === 'Orden Terminada' || order.status === 'Terminada') ? 'admin-purchase-item-status-completed' : order.status === 'Cancelada' ? 'admin-purchase-item-status-cancelled' : 'admin-purchase-item-status-other'}`}>
                             {order.status === 'Completada' || order.status === 'Terminada' ? 'Orden Terminada' : order.status}
                           </span>
                         </div>
-                        <div style={{ fontSize: '0.8rem', color: '#64748b', marginBottom: '0.75rem' }}>
+                        <div className="admin-purchase-item-meta">
                           <span>{new Date(order.date).toLocaleString('es-MX')}</span>
-                          <span style={{ margin: '0 0.5rem' }}>•</span>
+                          <span className="admin-purchase-item-meta-dot">•</span>
                           <span>Pago: {order.metodoPago || 'Efectivo'}</span>
                         </div>
                         
-                        <div style={{ borderTop: '1px dashed #cbd5e1', paddingTop: '0.5rem' }}>
-                          <span style={{ fontSize: '0.8rem', fontWeight: '600', color: '#475569' }}>Productos:</span>
-                          <ul style={{ listStyle: 'none', padding: 0, margin: '0.25rem 0 0 0' }}>
+                        <div className="admin-purchase-item-products-section">
+                          <span className="admin-purchase-item-products-label">Productos:</span>
+                          <ul className="admin-purchase-item-products-list">
                             {order.items?.map((item, idx) => (
-                              <li key={idx} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: '#334155', margin: '0.2rem 0' }}>
+                              <li key={idx} className="admin-purchase-item-products-li">
                                 <span>{item.name || item.title || 'Producto'} (x{item.quantity || 1})</span>
                                 <span>{formatMoney((item.price || 0) * (item.quantity || 1))}</span>
                               </li>
@@ -895,7 +849,7 @@ export default function AdminDashboard() {
                           </ul>
                         </div>
                         
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #cbd5e1', marginTop: '0.75rem', paddingTop: '0.5rem', fontWeight: '700' }}>
+                        <div className="admin-purchase-item-totals-row">
                           <span>Total</span>
                           <span>{formatMoney(order.total)}</span>
                         </div>
@@ -906,14 +860,13 @@ export default function AdminDashboard() {
               })()}
             </div>
             
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '1.5rem', borderTop: '1px solid #e2e8f0', paddingTop: '1rem' }}>
+            <div className="admin-modal-footer">
               <Button onClick={() => setShowPurchasesModal(false)} variant="secondary">Cerrar</Button>
             </div>
           </div>
         </div>
       )}
 
-      {/* USER MODAL */}
       {showUserModal && (
         <div className="modal-backdrop">
           <div className="modal-box">

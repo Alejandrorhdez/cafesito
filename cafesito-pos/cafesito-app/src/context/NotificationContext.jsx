@@ -16,7 +16,6 @@ export function NotificationProvider({ children }) {
   useEffect(() => {
     const handleOrderFinished = (orderData) => {
       setNotifications(prev => {
-        // Prevent duplicate notification entries for the same order ID
         if (prev.some(n => n.orderId === orderData.orderId)) {
           return prev;
         }

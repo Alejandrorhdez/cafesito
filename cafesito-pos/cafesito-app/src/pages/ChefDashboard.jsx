@@ -91,7 +91,7 @@ export default function ChefDashboard() {
     <div className="chef-dashboard">
       <div className="chef-header">
         <h1>Vista Chef - {showCompleted ? 'Órdenes Terminadas' : 'Órdenes Activas'}</h1>
-        <div style={{ display: 'flex', gap: '10px' }}>
+        <div className="chef-header-actions">
           {showCompleted && (
             <Button variant="danger" onClick={handleClearCompleted}>Borrar Órdenes</Button>
           )}
@@ -157,9 +157,9 @@ export default function ChefDashboard() {
                     </div>
                   ))}
                 </div>
-                <div className="order-actions" style={{ flexDirection: 'column', alignItems: 'flex-start', fontSize: '0.9rem', color: '#666', borderTop: '1px solid #eee', paddingTop: '10px' }}>
-                  <p style={{ margin: '0 0 5px 0' }}><strong>Terminada a las:</strong> {new Date(order.updatedAt).toLocaleTimeString()}</p>
-                  <p style={{ margin: '0' }}><strong>Por el chef:</strong> {order.completadaPor?.nombre || 'Desconocido'}</p>
+                 <div className="order-actions order-actions-completed">
+                  <p className="completed-time"><strong>Terminada a las:</strong> {new Date(order.updatedAt).toLocaleTimeString()}</p>
+                  <p className="completed-by"><strong>Por el chef:</strong> {order.completadaPor?.nombre || 'Desconocido'}</p>
                 </div>
               </div>
             ))

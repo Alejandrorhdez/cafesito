@@ -13,8 +13,8 @@ export default function Cart() {
     return (
       <div className="cart">
         {posClientName && (
-          <div className="cart-client-welcome" style={{ padding: '1rem', backgroundColor: '#f1f5f9', borderRadius: '8px', marginBottom: '1rem', border: '1px solid #cbd5e1' }}>
-            <h2 style={{ margin: 0, color: '#334155', fontSize: '1.2rem' }}>Bienvenido {posClientName}</h2>
+          <div className="cart-client-welcome">
+            <h2 className="cart-client-welcome-title">Bienvenido {posClientName}</h2>
           </div>
         )}
         <div className="cart-empty">
@@ -32,8 +32,8 @@ export default function Cart() {
   return (
     <div className="cart">
       {posClientName && (
-        <div className="cart-client-welcome" style={{ padding: '1rem', backgroundColor: '#f1f5f9', borderRadius: '8px', marginBottom: '1rem', border: '1px solid #cbd5e1' }}>
-          <h2 style={{ margin: 0, color: '#334155', fontSize: '1.2rem' }}>Bienvenido {posClientName}</h2>
+        <div className="cart-client-welcome">
+          <h2 className="cart-client-welcome-title">Bienvenido {posClientName}</h2>
         </div>
       )}
       <div className="cart-header">

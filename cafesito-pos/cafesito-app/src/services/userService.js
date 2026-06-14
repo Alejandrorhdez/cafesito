@@ -14,7 +14,6 @@ export const getUserProfile = async () => {
       throw new Error("No se pudo obtener el perfil");
     }
 
-    // Normalizamos 'rol' a 'role' para que el frontend funcione correctamente
     const normalizedUser = { ...user, role: user.rol };
 
     sessionStorage.setItem("userData", JSON.stringify(normalizedUser));

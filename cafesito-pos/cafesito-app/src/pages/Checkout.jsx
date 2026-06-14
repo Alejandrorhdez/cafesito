@@ -28,16 +28,26 @@ export default function Checkout() {
     clearCart,
   } = useCart();
 
-  // Cálculos financieros simples basados en el carrito
+
   const subtotal = typeof cartSubtotal === "number" ? cartSubtotal : 0;
   const TAX_RATE = Number(process.env.REACT_APP_TAX_RATE);
   const resolvedTaxRate = Number.isFinite(TAX_RATE) ? TAX_RATE : 0.16;
-
-  const taxAmount = typeof cartTax === "number" ? cartTax : parseFloat((subtotal * resolvedTaxRate).toFixed(2));
   const isEmployee = user?.role === "Cajero" || user?.role === "Administrador";
 
+  let discountPercentage = 0;
+  if (isEmployee && selectedClient && !selectedClient.isGuest && selectedClient.descuento) {
+    discountPercentage = selectedClient.descuento;
+  } else if (!isEmployee && user && user.descuento) {
+    discountPercentage = user.descuento;
+  }
+
+  const discountAmount = parseFloat((subtotal * (discountPercentage / 100)).toFixed(2));
+  const subtotalAfterDiscount = subtotal - discountAmount;
+
+  const taxAmount = parseFloat((subtotalAfterDiscount * resolvedTaxRate).toFixed(2));
+
   const grandTotal = parseFloat(
-    (subtotal + taxAmount).toFixed(2),
+    (subtotalAfterDiscount + taxAmount).toFixed(2),
   );
   const formatMoney = (v) =>
     new Intl.NumberFormat("es-MX", {
@@ -45,7 +55,7 @@ export default function Checkout() {
       currency: "MXN",
     }).format(v);
 
-  // Efecto para redirigir si no hay productos
+
   useEffect(() => {
     if (!cartItems || cartItems.length === 0) {
       if (!suppressRedirect.current) {
@@ -221,7 +231,7 @@ export default function Checkout() {
     ) : localError ? (
       <div className="checkout-error">
         <ErrorMessage message={localError}>
-          <div style={{ textAlign: "center", marginTop: 12 }}>
+          <div className="checkout-retry-container">
             <Button onClick={handleRetry} variant="primary">
               Reintentar
             </Button>
@@ -236,13 +246,13 @@ export default function Checkout() {
             selected={isEmployee ? true : selectedPayment}
             summaryContent={
               isEmployee ? (
-                <div className="selected-payment" style={{ padding: "1rem" }}>
-                  <p style={{ fontWeight: "bold", marginBottom: "0.5rem" }}>Cobro en Caja</p>
-                  <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.5rem" }}>
+                <div className="selected-payment-box">
+                  <p className="payment-box-title">Cobro en Caja</p>
+                  <div className="payment-buttons-row">
                     <Button
                       variant={employeePaymentMethod === "Efectivo" ? "primary" : "secondary"}
                       onClick={(e) => { e.stopPropagation(); setEmployeePaymentMethod("Efectivo"); }}
-                      style={{ flex: 1, padding: "0.5rem", fontSize: "0.9rem" }}
+                      className="payment-select-btn"
                       type="button"
                     >
                       Efectivo
@@ -250,7 +260,7 @@ export default function Checkout() {
                     <Button
                       variant={employeePaymentMethod === "Tarjeta física" ? "primary" : "secondary"}
                       onClick={(e) => { e.stopPropagation(); setEmployeePaymentMethod("Tarjeta física"); }}
-                      style={{ flex: 1, padding: "0.5rem", fontSize: "0.9rem" }}
+                      className="payment-select-btn"
                       type="button"
                     >
                       Tarjeta física
@@ -342,6 +352,11 @@ export default function Checkout() {
                 <p>
                   <strong>Subtotal:</strong> {formatMoney(subtotal)}
                 </p>
+                {discountPercentage > 0 && (
+                  <p className="discount-applied">
+                    <strong>Descuento ({discountPercentage}%):</strong> -{formatMoney(discountAmount)}
+                  </p>
+                )}
                 <p>
                   <strong>IVA (16%):</strong> {formatMoney(taxAmount)}
                 </p>
@@ -383,7 +398,6 @@ export default function Checkout() {
 
                   const newOrder = await createOrder(payload);
 
-                  // Notificar al chef y otros clientes en tiempo real
                   socket.emit("pos-order-created", newOrder);
 
                   suppressRedirect.current = true;

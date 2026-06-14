@@ -1,3 +1,5 @@
+@import "./extracted.css";
+
 /* Base global styles */
 body {
   margin: 0;

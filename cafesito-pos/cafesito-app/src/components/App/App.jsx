@@ -1,6 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
-// Pages
 import Login from '../../pages/Login';
 import Register from '../../pages/Register';
 import ClientDashboard from '../../pages/ClientDashboard';
@@ -19,11 +18,9 @@ function App() {
     <BrowserRouter>
       <Layout>
         <Routes>
-        {/* Public Routes */}
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<Login />} />
 
-        {/* Protected Routes */}
         <Route 
           path="/register" 
           element={
@@ -32,8 +29,6 @@ function App() {
             </ProtectedRoute>
           } 
         />
-
-        {/* Protected Routes by Role */}
         
         <Route 
           path="/cliente" 
@@ -96,7 +91,6 @@ function App() {
           } 
         />
 
-        {/* Fallback Route */}
         <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </Layout>

@@ -64,8 +64,6 @@ export function AuthProvider({ children }) {
     initAuth();
   }, []);
 
-  // Se elimina el listener de storage porque sessionStorage está aislado por pestaña
-
   const login = async (email, password) => {
     setLoading(true);
     try {

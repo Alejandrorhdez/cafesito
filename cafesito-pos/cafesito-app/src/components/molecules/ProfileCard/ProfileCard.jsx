@@ -43,8 +43,7 @@ export default function ProfileCard() {
               {currentUser.displayName || currentUser.name || currentUser.email}
             </h2>
             <span
-              className="profile-role-badge"
-              style={{ background: ROLE_COLORS[role] }}
+              className={`profile-role-badge role-${role}`}
             >
               {role}
             </span>

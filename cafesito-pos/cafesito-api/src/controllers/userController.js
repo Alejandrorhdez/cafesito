@@ -1,4 +1,5 @@
 import User from '../models/User.js';
+import { getDiscountPercentage } from '../utils/discountHelper.js';
 
 export const obtenerUsuarios = async (req, res) => {
     try {
@@ -16,7 +17,12 @@ export const obtenerUsuarioPorId = async (req, res) => {
         if (!usuario) {
             return res.status(404).json({ error: "Usuario no encontrado." });
         }
-        res.json(usuario);
+        
+        const descuento = await getDiscountPercentage(usuario._id);
+        const userObj = usuario.toObject();
+        userObj.descuento = descuento;
+        
+        res.json(userObj);
     } catch (error) {
         res.status(500).json({ error: 'Error al obtener el usuario' });
     }
@@ -130,7 +136,12 @@ export const buscarUsuarioPorTelefono = async (req, res) => {
         if (!usuario) {
             return res.status(404).json({ error: "Cliente no registrado." });
         }
-        res.json(usuario);
+        
+        const descuento = await getDiscountPercentage(usuario._id);
+        const userObj = usuario.toObject();
+        userObj.descuento = descuento;
+        
+        res.json(userObj);
     } catch (error) {
         res.status(500).json({ error: 'Error al buscar el usuario por teléfono' });
     }

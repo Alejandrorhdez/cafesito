@@ -21,7 +21,6 @@ export function CartProvider({ children }) {
 
   const { isAuth, user } = useAuth();
 
-  // Funciones auxiliares:
   const getTotalItems = useCallback(
     () => state.items.reduce((sum, i) => sum + i.quantity, 0),
     [state.items],
@@ -44,7 +43,6 @@ export function CartProvider({ children }) {
 
   const isSocketUpdate = useRef(false);
 
-  // Escuchar actualizaciones remotas del carrito (ej. desde el dashboard del empleado o cliente)
   useEffect(() => {
     const handleSyncCart = (newCartItems) => {
       isSocketUpdate.current = true;
@@ -64,7 +62,6 @@ export function CartProvider({ children }) {
     };
   }, []);
 
-  // Actualizar localStorage cuando cambie el carrito y emitir por socket
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(state.items));
     
@@ -75,7 +72,6 @@ export function CartProvider({ children }) {
     }
   }, [state.items]);
 
-  // Limpiar el carrito al cerrar sesión (transición de isAuth de true a false)
   const prevIsAuthRef = useRef(isAuth);
   useEffect(() => {
     if (prevIsAuthRef.current && !isAuth) {
@@ -90,8 +86,6 @@ export function CartProvider({ children }) {
         const isEmployee = user.role === "Cajero" || user.role === "Administrador";
         
         if (isEmployee) {
-          // Los empleados usan el carrito de forma local para el punto de venta.
-          // Siempre iniciamos con el carrito vacío al iniciar sesión.
           dispatch({ type: CART_ACTIONS.CLEAR });
           return;
         }
@@ -116,7 +110,6 @@ export function CartProvider({ children }) {
       
       const isEmployee = user?.role === "Cajero" || user?.role === "Administrador";
       if (isEmployee) {
-        // No sincronizamos el carrito de punto de venta al backend
         return;
       }
 

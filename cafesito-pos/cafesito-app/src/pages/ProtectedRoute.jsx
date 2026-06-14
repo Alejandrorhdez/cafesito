@@ -17,7 +17,7 @@ export default function ProtectedRoute({
 
   if (allowedRoles && user && !allowedRoles.includes(user.role)) {
     return (
-      <div style={{ textAlign: "center", padding: "48px" }}>
+      <div className="protected-route-denied">
         <h2>Acceso denegado</h2>
         <p>No tienes permisos para acceder a esta página.</p>
       </div>

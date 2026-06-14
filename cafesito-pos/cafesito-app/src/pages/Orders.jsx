@@ -127,7 +127,7 @@ export default function Orders() {
               : `Tienes ${visibleOrders.length} pedidos registrados`}
           </p>
         </div>
-        <div style={{ display: 'flex', gap: '10px' }}>
+        <div className="orders-header-actions">
           <Button variant="danger" onClick={handleClearCompleted}>
             Borrar Terminadas
           </Button>
@@ -170,11 +170,11 @@ export default function Orders() {
                     </span>
                   </div>
                   <p className="order-date">{formatDate(order.date)}</p>
-                  <div className="order-card-meta" style={{ display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'flex-start' }}>
-                    <span style={{ fontSize: '0.85em', color: '#64748b', fontWeight: 'bold' }}>
+                  <div className="order-card-meta">
+                    <span className="order-card-client-label">
                       Cliente: {clientName}
                     </span>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                    <div className="order-card-meta-row">
                       <span>{itemCount} artículos</span>
                       <strong>{formatMoney(order.total || 0)}</strong>
                     </div>

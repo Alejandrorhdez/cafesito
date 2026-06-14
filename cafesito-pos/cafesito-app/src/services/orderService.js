@@ -47,7 +47,6 @@ const mapOrder = (o) => {
 
 export const createOrder = async (orderData) => {
   try {
-    // Convert frontend properties back to backend schema if needed
     const backendOrderData = {
       usuario: orderData.userId || orderData.usuario,
       nombreInvitado: orderData.nombreInvitado,

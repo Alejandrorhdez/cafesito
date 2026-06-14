@@ -16,8 +16,6 @@ export default function Login() {
         navigate("/admin", { replace: true });
       } else if (role === "Chef") {
         navigate("/chef", { replace: true });
-      } else {
-        // Default to /empleado for Cajero or other roles
         navigate("/empleado", { replace: true });
       }
     }
@@ -33,8 +31,6 @@ export default function Login() {
       navigate("/admin", { replace: true });
     } else if (role === "Chef") {
       navigate("/chef", { replace: true });
-    } else {
-      // Default to /empleado for Cajero or other roles
       navigate("/empleado", { replace: true });
     }
   };

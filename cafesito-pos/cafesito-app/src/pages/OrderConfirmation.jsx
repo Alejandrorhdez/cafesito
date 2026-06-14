@@ -12,19 +12,15 @@ export default function OrderConfirmation() {
   const clearedRef = useRef(false);
 
   useEffect(() => {
-    // Si no hay orden en el state, redirigir al inicio
     if (!order) {
       navigate("/");
       return;
     }
 
-    // Limpiar el carrito una sola vez cuando llegamos a la confirmación
     if (!clearedRef.current) {
       try {
         clearCart();
       } catch (e) {
-        // si hay algún problema, no bloqueamos la vista de confirmación
-        // (ej. clearCart no está disponible)
       }
       clearedRef.current = true;
     }
@@ -32,12 +28,10 @@ export default function OrderConfirmation() {
 
   if (!order) return null;
 
-  // Formatear la fecha para mostrarla
   const orderDate = order.date
     ? new Date(order.date).toLocaleDateString()
     : "No disponible";
 
-  // Formatear el total con Intl.NumberFormat para mejor formato de moneda
   const money = (v) =>
     typeof v === "number"
       ? new Intl.NumberFormat("es-MX", {
@@ -74,7 +68,7 @@ export default function OrderConfirmation() {
               {(order.items || []).map((it) => (
                 <li key={it._id || it.id || it.name}>
                   {it.name} x{it.quantity} — {money(it.price)}
-                  <span style={{ float: "right" }}>{money(it.subtotal)}</span>
+                  <span className="order-item-subtotal">{money(it.subtotal)}</span>
                 </li>
               ))}
             </ul>

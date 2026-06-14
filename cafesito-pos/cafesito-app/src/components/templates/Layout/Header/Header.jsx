@@ -15,17 +15,15 @@ export default function Header() {
     <header className="header">
       <div className="header-main">
         <div className="container">
-          <div className="header-content" style={{ justifyContent: 'space-between' }}>
-            {/* Logo */}
+          <div className="header-content header-content-spaced">
             <Link to="/" className="logo" data-testid="logo">
               Cafesito
               <span className="logo-extension"> POS</span>
             </Link>
 
-            {/* Auth Actions */}
             {isAuth && user && (
               <div className="header-actions">
-                <div className="user-info" style={{ cursor: "default" }}>
+                <div className="user-info user-info-default">
                   <div className="user-text">
                     <span className="greeting">Bienvenido,</span>
                     <span className="account-text">{user.nombre || user.name || "Empleado"}</span>
@@ -33,8 +31,7 @@ export default function Header() {
                 </div>
                 <button 
                   onClick={handleLogout} 
-                  className="logout-btn" 
-                  style={{ width: "auto", padding: "8px 16px", marginTop: 0 }}
+                  className="logout-btn header-logout-btn" 
                 >
                   Cerrar Sesión
                 </button>

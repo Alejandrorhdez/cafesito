@@ -7,7 +7,6 @@ export default function BannerCarousel({ banners = [] }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
-  // Auto-cambio cada 5 segundos
   useEffect(() => {
     if (banners.length <= 1) return;
 
@@ -73,7 +72,6 @@ export default function BannerCarousel({ banners = [] }) {
         role="region"
         aria-label="Carrusel de banners promocionales"
       >
-        {/* Slides container */}
         <div className="slides-wrapper">
           {banners.map((banner, index) => {
             return (
@@ -109,7 +107,6 @@ export default function BannerCarousel({ banners = [] }) {
                         size="large"
                         onClick={() => {
                           console.log(`Navegando a: ${banner.buttonLink}`);
-                          // Aquí iría la navegación real
                         }}
                         aria-label={`${banner.buttonText} - ${banner.title}`}
                       >
@@ -134,7 +131,6 @@ export default function BannerCarousel({ banners = [] }) {
           })}
         </div>
 
-        {/* Navigation controls */}
         {banners.length > 1 && (
           <>
             <button
@@ -159,7 +155,6 @@ export default function BannerCarousel({ banners = [] }) {
           </>
         )}
 
-        {/* Indicators */}
         {banners.length > 1 && (
           <div className="carousel-indicators" role="tablist">
             {banners.map((banner, index) => (
@@ -179,7 +174,6 @@ export default function BannerCarousel({ banners = [] }) {
           </div>
         )}
 
-        {/* Progress bar */}
         <div className="carousel-progress">
           <div
             className="progress-bar"
@@ -189,7 +183,6 @@ export default function BannerCarousel({ banners = [] }) {
           ></div>
         </div>
 
-        {/* Banner counter */}
         <div className="banner-counter">
           <span>{currentIndex + 1}</span>
           <span className="divider">/</span>
