@@ -28,7 +28,6 @@ export const crearOrden = async (req, res) => {
         
         await nuevaOrden.save();
 
-        // Incrementar comprasRealizadas para usuarios con rol Cliente
         if (usuario) {
             const clienteObj = await User.findById(usuario);
             if (clienteObj && clienteObj.rol === 'Cliente') {
@@ -37,7 +36,6 @@ export const crearOrden = async (req, res) => {
             }
         }
         
-        // Opcional: Limpiar el carrito del usuario al crear una orden
         if (usuario) {
             await Cart.findOneAndDelete({ usuario });
         }

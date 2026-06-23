@@ -16,6 +16,7 @@ export default function Login() {
         navigate("/admin", { replace: true });
       } else if (role === "Chef") {
         navigate("/chef", { replace: true });
+      } else if (role === "Cajero") {
         navigate("/empleado", { replace: true });
       }
     }
@@ -31,6 +32,7 @@ export default function Login() {
       navigate("/admin", { replace: true });
     } else if (role === "Chef") {
       navigate("/chef", { replace: true });
+    } else if (role === "Cajero") {
       navigate("/empleado", { replace: true });
     }
   };

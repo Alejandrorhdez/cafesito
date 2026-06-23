@@ -3,15 +3,37 @@ import Order from '../models/Order.js';
 export const getDiscountPercentage = async (userId) => {
     if (!userId) return 0;
     
-    const seisMesesAtras = new Date();
-    seisMesesAtras.setMonth(seisMesesAtras.getMonth() - 6);
-    
     try {
-        const purchasesCount = await Order.countDocuments({
+        const userOrders = await Order.find({
             usuario: userId,
-            createdAt: { $gte: seisMesesAtras },
             estado: { $nin: ['Cancelada'] }
-        });
+        }).sort({ createdAt: -1 }).select('createdAt');
+        
+        if (userOrders.length === 0) return 0;
+
+        const now = new Date();
+        
+        const isMoreThan6Months = (newerDate, olderDate) => {
+            const limitDate = new Date(olderDate);
+            limitDate.setMonth(limitDate.getMonth() + 6);
+            return newerDate > limitDate;
+        };
+
+        if (isMoreThan6Months(now, userOrders[0].createdAt)) {
+            return 0;
+        }
+
+        let purchasesCount = 1;
+
+        for (let i = 1; i < userOrders.length; i++) {
+            const newerOrderDate = userOrders[i - 1].createdAt;
+            const olderOrderDate = userOrders[i].createdAt;
+
+            if (isMoreThan6Months(newerOrderDate, olderOrderDate)) {
+                break;
+            }
+            purchasesCount++;
+        }
         
         if (purchasesCount === 0) return 0;
         if (purchasesCount >= 1 && purchasesCount <= 3) return 5;

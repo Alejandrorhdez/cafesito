@@ -59,7 +59,6 @@ export const crearUsuario = async (req, res) => {
         });
         await nuevoUsuario.save();
         
-        // Remove password before sending
         const userResponse = nuevoUsuario.toObject();
         delete userResponse.password;
 

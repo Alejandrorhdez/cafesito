@@ -2,19 +2,16 @@ import User from '../models/User.js';
 import jwt from 'jsonwebtoken';
 import { getDiscountPercentage } from '../utils/discountHelper.js';
 
-// Generar Token JWT
 const generarToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET || 'secreto_cafeteria_pos_dev', {
         expiresIn: '30d',
     });
 };
 
-// POST: Registrar un nuevo usuario
 const registrarUsuario = async (req, res, next) => {
     try {
         const { nombre, email, password, rol, telefono } = req.body;
 
-        // Validaciones
         if (!nombre || nombre.trim().length < 3) {
             return res.status(400).json({ error: 'El nombre debe tener al menos 3 letras' });
         }
@@ -30,13 +27,11 @@ const registrarUsuario = async (req, res, next) => {
             return res.status(400).json({ error: 'El número de teléfono debe tener exactamente 10 números' });
         }
 
-        // Validar si el usuario ya existe
         const usuarioExiste = await User.findOne({ email });
         if (usuarioExiste) {
             return res.status(400).json({ error: 'El usuario ya está registrado con este correo' });
         }
 
-        // Crear usuario
         const usuario = await User.create({
             nombre: nombre.trim(),
             email: email.trim(),
@@ -61,15 +56,12 @@ const registrarUsuario = async (req, res, next) => {
     }
 };
 
-// POST: Iniciar sesión
 const loginUsuario = async (req, res, next) => {
     try {
         const { email, password } = req.body;
 
-        // Verificar el email
         const usuario = await User.findOne({ email });
 
-        // Verificar la contraseña y el usuario
         if (usuario && (await usuario.compararPassword(password))) {
             const descuento = await getDiscountPercentage(usuario._id);
             res.json({
@@ -88,7 +80,6 @@ const loginUsuario = async (req, res, next) => {
     }
 };
 
-// GET: Obtener perfil de usuario autenticado
 const obtenerPerfil = async (req, res, next) => {
     try {
         const usuario = await User.findById(req.usuario._id);

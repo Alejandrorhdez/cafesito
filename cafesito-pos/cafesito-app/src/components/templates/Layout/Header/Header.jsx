@@ -18,7 +18,6 @@ export default function Header() {
           <div className="header-content header-content-spaced">
             <Link to="/" className="logo" data-testid="logo">
               Cafesito
-              <span className="logo-extension"> POS</span>
             </Link>
 
             {isAuth && user && (
